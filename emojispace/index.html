@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flying Through Space</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+    
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    
+    resizeCanvas();
+    
+    const stellarEmojis = [
+      '⭐', '🌟', '✨', '💫', '🌠', '🌌', '🪐', '🌑', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘', '🌙', '🌚', '🌝', '🌞', '🪐', '☄️', '🌍', '🌎', '🌏', '🌈', '🔥', '💥', '🎇', '🎆', '🌈', '🌊', '🌀', '🌪️', '⚡', '❄️', '🌺', '🌼', '🌷', '🪷', '🌸', '🔮', '🎃', '🎄', '🎈', '🎉', '🎊', '🎁', '🎀', '🎗️', '🎖️', '🏆', '🏅', '🥇', '🥈', '🥉', '🎨', '🎭', '🎬', '🎥', '🎼', '🎵', '🎶', '🎹', '🎸', '🎻', '🪕', '🥁', '🎷', '🎺', '🪗', '🎸', '🎤', '🎧', '🎚️', '🎛️', '🎙️', '🪘', '🪄', '🪅', '🪆', '🪡', '🪢', '🔮', '💎', '🧿'
+    ];
+    
+    class Star {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.z = Math.random() * 1000;
+        this.emoji = stellarEmojis[Math.floor(Math.random() * stellarEmojis.length)];
+        this.speed = Math.random() * 2 + 1;
+        this.hue = Math.floor(Math.random() * 360);
+      }
+      
+      update() {
+        this.z -= this.speed;
+        if (this.z < 0) {
+          this.z = 1000;
+        }
+      }
+      
+      draw() {
+        const perspective = canvas.width / 2 / this.z;
+        const x = (this.x - canvas.width / 2) * perspective + canvas.width / 2;
+        const y = (this.y - canvas.height / 2) * perspective + canvas.height / 2;
+        
+        ctx.font = `${24 * perspective}px Arial`;
+        ctx.fillStyle = `hsl(${this.hue}, 100%, 50%)`;
+        ctx.shadowColor = `hsl(${this.hue}, 100%, 50%)`;
+        ctx.shadowBlur = 10 * perspective;
+        ctx.fillText(this.emoji, x, y);
+      }
+    }
+    
+    const stars = [];
+    for (let i = 0; i < 100; i++) {
+      stars.push(new Star());
+    }
+    
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      for (const star of stars) {
+        star.update();
+        star.draw();
+      }
+      
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    // Keyboard trigger for fullscreen
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'f') {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+        }
+      }
+    });
+    
+    // Resize canvas when the window is resized
+    window.addEventListener('resize', resizeCanvas);
+  </script>
+</body>
+</html>
